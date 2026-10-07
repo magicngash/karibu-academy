@@ -1,0 +1,12 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/training"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/console"
+  to = "/owner-console.html"
+  status = 200
