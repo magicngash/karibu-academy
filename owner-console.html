@@ -8,6 +8,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <style>
   html, body { margin: 0; padding: 0; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid #E8A33D;
+    outline-offset: 2px;
+  }
 </style>
 </head>
 <body>
@@ -435,7 +439,7 @@ function MonthlyReport({
   }, "Monthly Report — ", restaurant.name), /*#__PURE__*/React.createElement("button", {
     style: styles.textBtn,
     onClick: onClose
-  }, "Close")), /*#__PURE__*/React.createElement("div", {
+  }, "Back to restaurants")), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 10,
