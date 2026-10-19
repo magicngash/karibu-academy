@@ -27,9 +27,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 const SUPABASE_URL = "https://vnrypurmtvqoiowzekrn.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZucnlwdXJtdHZxb2lvd3pla3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTIwODUsImV4cCI6MjEwMDU2ODA4NX0.LbBLKHfZ_UD3YucDSCqtZiJs9_yKLD_tHaeAda2tJHk";
 const DEFAULT_RESTAURANT_ID = "991883cf-9efb-4d1a-840a-f4d24f828fd8"; // Jefferson's Restaurant
-// Each restaurant gets its own link: karibu-academy.html?r=<their-restaurant-id>
-// Falls back to Jefferson's if no ?r= parameter is present (e.g. local testing).
-const RESTAURANT_ID = new URLSearchParams(window.location.search).get("r") || DEFAULT_RESTAURANT_ID;
+// Supported links: /training?r=<id> (legacy) or /<restaurant-slug> (preferred).
+const routeParams = new URLSearchParams(window.location.search);
+const routeParts = window.location.pathname.split("/").filter(Boolean);
+const ROUTE_SLUG = routeParts.length === 1 && !["training", "index.html", "console"].includes(routeParts[0]) ? routeParts[0].toLowerCase() : "";
+let RESTAURANT_ID = routeParams.get("r") || DEFAULT_RESTAURANT_ID;
+let RESTAURANT_ROUTE_ERROR = "";
 
 // Plain fetch-based RPC helper — no external SDK/script tag required,
 // so this works both in a live artifact preview and as standalone HTML.
@@ -2218,6 +2221,22 @@ function Home({
 // APP ROOT
 // =====================================================================
 function App() {
+  if (RESTAURANT_ROUTE_ERROR) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "screen",
+      style: styles.screen,
+      role: "alert"
+    }, /*#__PURE__*/React.createElement("h1", {
+      style: styles.coverTitle
+    }, "Training link not found"), /*#__PURE__*/React.createElement("p", {
+      style: styles.coverSub
+    }, RESTAURANT_ROUTE_ERROR), /*#__PURE__*/React.createElement("button", {
+      style: styles.primaryBtn,
+      onClick: () => {
+        window.location.href = "/";
+      }
+    }, "Back to home"));
+  }
   const [screen, setScreen] = React.useState("login"); // 'login' | 'welcome' | 'home' | 'module' | 'coming-soon' | 'manager-dashboard'
   const [session, setSession] = React.useState(null); // { staffId, fullName, role }
   const [activeMod, setActiveMod] = React.useState(null);
@@ -3006,7 +3025,23 @@ const styles = {
   }
 };
 
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+async function bootTrainingApp() {
+  if (ROUTE_SLUG && !routeParams.get("r")) {
+    const {
+      data,
+      error
+    } = await callRpc("get_restaurant_by_slug", {
+      p_slug: ROUTE_SLUG
+    });
+    if (error || !data?.id) {
+      RESTAURANT_ROUTE_ERROR = "Ask your manager for the correct training link.";
+    } else {
+      RESTAURANT_ID = data.id;
+    }
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+}
+bootTrainingApp();
 </script>
 </body>
 </html>

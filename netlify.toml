@@ -10,3 +10,8 @@
   from = "/console"
   to = "/owner-console.html"
   status = 200
+
+[[redirects]]
+  from = "/:restaurant_slug"
+  to = "/index.html"
+  status = 200

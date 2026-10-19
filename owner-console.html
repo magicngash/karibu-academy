@@ -24,8 +24,12 @@ const SUPABASE_URL = "https://vnrypurmtvqoiowzekrn.supabase.co";
 const STAFF_APP_PATH = "/training";
 const CREDENTIAL_VAULT_KEY = "karibu-owner-credential-vault";
 
-function staffAppUrl(restaurantId) {
-  return `${window.location.origin}${STAFF_APP_PATH}?r=${encodeURIComponent(restaurantId)}`;
+function restaurantSlug(name) {
+  return String(name || "restaurant").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "restaurant";
+}
+
+function staffAppUrl(name) {
+  return `${window.location.origin}/${restaurantSlug(name)}`;
 }
 
 function readCredentialVault() {
@@ -583,7 +587,7 @@ function Dashboard({
       setError("Couldn't add that restaurant. " + (data?.error === "pin_must_be_4_digits" ? "PIN must be 4 digits." : ""));
       return;
     }
-    const staffUrl = staffAppUrl(data.restaurant_id);
+    const staffUrl = staffAppUrl(newName.trim());
     const credential = {
       restaurantId: data.restaurant_id,
       restaurantName: newName.trim(),
