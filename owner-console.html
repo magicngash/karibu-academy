@@ -17,7 +17,27 @@
 // SUPABASE CONFIG (same project, separate owner-only functions)
 // =====================================================================
 const SUPABASE_URL = "https://vnrypurmtvqoiowzekrn.supabase.co";
-const STAFF_APP_FILE = "index.html";
+const STAFF_APP_PATH = "/training";
+const CREDENTIAL_VAULT_KEY = "karibu-owner-credential-vault";
+
+function staffAppUrl(restaurantId) {
+  return `${window.location.origin}${STAFF_APP_PATH}?r=${encodeURIComponent(restaurantId)}`;
+}
+
+function readCredentialVault() {
+  try {
+    const value = JSON.parse(localStorage.getItem(CREDENTIAL_VAULT_KEY) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function writeCredentialVault(entries) {
+  try {
+    localStorage.setItem(CREDENTIAL_VAULT_KEY, JSON.stringify(entries));
+  } catch (_) {}
+}
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZucnlwdXJtdHZxb2lvd3pla3JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5OTIwODUsImV4cCI6MjEwMDU2ODA4NX0.LbBLKHfZ_UD3YucDSCqtZiJs9_yKLD_tHaeAda2tJHk";
 async function callRpc(name, params) {
   try {
@@ -519,7 +539,8 @@ function Dashboard({
   const [managerName, setManagerName] = React.useState("");
   const [managerPin, setManagerPin] = React.useState("");
   const [adding, setAdding] = React.useState(false);
-  const [createdLink, setCreatedLink] = React.useState(null); // { restaurantId, managerName }
+  const [createdLink, setCreatedLink] = React.useState(null); // { restaurantId, managerName, managerPin, url }
+  const [credentialVault, setCredentialVault] = React.useState(() => readCredentialVault());
   const [reportFor, setReportFor] = React.useState(null); // restaurant object, or null
 
   async function load() {
@@ -558,10 +579,23 @@ function Dashboard({
       setError("Couldn't add that restaurant. " + (data?.error === "pin_must_be_4_digits" ? "PIN must be 4 digits." : ""));
       return;
     }
+    const staffUrl = staffAppUrl(data.restaurant_id);
+    const credential = {
+      restaurantId: data.restaurant_id,
+      restaurantName: newName.trim(),
+      managerName: managerName.trim(),
+      managerPin,
+      url: staffUrl,
+      createdAt: new Date().toISOString()
+    };
+    const nextVault = [credential, ...readCredentialVault().filter(entry => entry.restaurantId !== credential.restaurantId)];
+    writeCredentialVault(nextVault);
+    setCredentialVault(nextVault);
     setCreatedLink({
       restaurantId: data.restaurant_id,
       managerName: managerName.trim(),
-      managerPin
+      managerPin,
+      url: staffUrl
     });
     setNewName("");
     setNewAppName("Karibu Academy");
@@ -611,7 +645,10 @@ function Dashboard({
       fontSize: "0.9rem",
       color: COLORS.espresso
     }
-  }, "Give this restaurant's staff app link to their manager:"), /*#__PURE__*/React.createElement("code", {
+  }, "Give this restaurant's staff app link to their manager:"), /*#__PURE__*/React.createElement("a", {
+    href: createdLink.url,
+    target: "_blank",
+    rel: "noreferrer",
     style: {
       display: "block",
       background: "#fff",
@@ -621,15 +658,59 @@ function Dashboard({
       fontSize: "0.85rem",
       wordBreak: "break-all"
     }
-  }, STAFF_APP_FILE + "?r=" + createdLink.restaurantId), /*#__PURE__*/React.createElement("p", {
+  }, createdLink.url), /*#__PURE__*/React.createElement("p", {
     style: {
       margin: "8px 0 0",
       fontSize: "0.9rem"
     }
-  }, "First manager login: ", /*#__PURE__*/React.createElement("strong", null, createdLink.managerName), " / PIN ", /*#__PURE__*/React.createElement("strong", null, createdLink.managerPin)), /*#__PURE__*/React.createElement("button", {
+  }, "First manager login: ", /*#__PURE__*/React.createElement("strong", null, createdLink.managerName), " / PIN ", /*#__PURE__*/React.createElement("strong", null, createdLink.managerPin)), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "8px 0 0",
+      fontSize: "0.8rem",
+      color: COLORS.stone
+    }
+  }, "Saved in this browser's local credential vault."), /*#__PURE__*/React.createElement("button", {
     style: styles.textBtn,
     onClick: () => setCreatedLink(null)
-  }, "Dismiss")), !restaurants && !error && /*#__PURE__*/React.createElement("p", {
+  }, "Dismiss")), credentialVault.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      ...styles.row,
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: 0,
+      fontWeight: 700,
+      color: COLORS.espresso
+    }
+  }, "Saved manager credentials"), /*#__PURE__*/React.createElement("p", {
+    style: {
+      margin: "6px 0 12px",
+      fontSize: "0.8rem",
+      color: COLORS.stone
+    }
+  }, "Stored only in this browser. Anyone who can use this browser can view these PINs."), credentialVault.map(entry => /*#__PURE__*/React.createElement("div", {
+    key: entry.restaurantId,
+    style: {
+      borderTop: `1px solid ${COLORS.tan}`,
+      padding: "10px 0"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, entry.restaurantName), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: "0.85rem",
+      marginTop: 4
+    }
+  }, entry.managerName, " / PIN ", entry.managerPin), /*#__PURE__*/React.createElement("a", {
+    href: entry.url,
+    target: "_blank",
+    rel: "noreferrer",
+    style: {
+      display: "block",
+      fontSize: "0.8rem",
+      marginTop: 4,
+      wordBreak: "break-all"
+    }
+  }, entry.url)))), !restaurants && !error && /*#__PURE__*/React.createElement("p", {
     style: {
       color: COLORS.stone
     }
