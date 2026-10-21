@@ -612,6 +612,14 @@ function Dashboard({
     setShowAdd(false);
     load();
   }
+  function handleDeletedRestaurant(deletedId) {
+    const nextVault = readCredentialVault().filter(entry => entry.restaurantId !== deletedId);
+    writeCredentialVault(nextVault);
+    setCredentialVault(nextVault);
+    setRestaurants(prev => prev.filter(x => x.id !== deletedId));
+    setReportFor(current => current?.id === deletedId ? null : current);
+    setCreatedLink(current => current?.restaurantId === deletedId ? null : current);
+  }
   return /*#__PURE__*/React.createElement("div", {
     style: styles.page
   }, /*#__PURE__*/React.createElement("div", {
@@ -732,7 +740,7 @@ function Dashboard({
     key: r.id
   }, /*#__PURE__*/React.createElement(RestaurantRow, {
     r: r,
-    onDeleted: deletedId => setRestaurants(prev => prev.filter(x => x.id !== deletedId))
+    onDeleted: handleDeletedRestaurant
   }), reportFor?.id === r.id ? /*#__PURE__*/React.createElement(MonthlyReport, {
     restaurant: r,
     onClose: () => setReportFor(null)
