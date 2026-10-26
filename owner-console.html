@@ -21,15 +21,26 @@
 // SUPABASE CONFIG (same project, separate owner-only functions)
 // =====================================================================
 const SUPABASE_URL = "https://vnrypurmtvqoiowzekrn.supabase.co";
-const STAFF_APP_PATH = "/training";
 const CREDENTIAL_VAULT_KEY = "karibu-owner-credential-vault";
 
 function restaurantSlug(name) {
   return String(name || "restaurant").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "restaurant";
 }
 
-function staffAppUrl(name) {
-  return `${window.location.origin}/${restaurantSlug(name)}`;
+async function staffAppUrl(name, restaurantId) {
+  const baseSlug = restaurantSlug(name);
+  const {
+    data: existing
+  } = await callRpc("get_restaurant_by_slug", {
+    p_slug: baseSlug
+  });
+
+  // Keep this in sync with make_restaurant_slug(): duplicate names get a
+  // short, deterministic suffix so every public URL remains unique.
+  const slug = existing?.id && existing.id !== restaurantId
+    ? `${baseSlug}-${String(restaurantId).replace(/-/g, "").slice(0, 6)}`
+    : baseSlug;
+  return `${window.location.origin}/${slug}`;
 }
 
 function readCredentialVault() {
@@ -587,7 +598,7 @@ function Dashboard({
       setError("Couldn't add that restaurant. " + (data?.error === "pin_must_be_4_digits" ? "PIN must be 4 digits." : ""));
       return;
     }
-    const staffUrl = staffAppUrl(newName.trim());
+    const staffUrl = await staffAppUrl(newName.trim(), data.restaurant_id);
     const credential = {
       restaurantId: data.restaurant_id,
       restaurantName: newName.trim(),

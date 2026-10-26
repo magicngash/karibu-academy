@@ -32,8 +32,10 @@ create trigger restaurants_set_slug
 before insert or update of name on public.restaurants
 for each row execute function public.make_restaurant_slug();
 
+-- Re-run the trigger for existing rows so duplicate names receive the same
+-- deterministic suffix as newly-created restaurants.
 update public.restaurants
-set slug = trim(both '-' from lower(regexp_replace(trim(name), '[^a-zA-Z0-9]+', '-', 'g')))
+set name = name
 where slug is null or slug = '';
 
 create unique index if not exists restaurants_slug_unique
