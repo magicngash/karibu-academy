@@ -2127,6 +2127,7 @@ function Home({
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: onBackToLanding,
+    "aria-label": "Back to signed-in landing",
     style: {
       display: "flex",
       alignItems: "center",
@@ -2142,7 +2143,7 @@ function Home({
     className: "icon-sm"
   }), /*#__PURE__*/React.createElement("span", {
     style: styles.eyebrowDark
-  }, (branding.app_name || "KARIBU ACADEMY").toUpperCase())), /*#__PURE__*/React.createElement("button", {
+  }, "Back · ", (branding.app_name || "KARIBU ACADEMY").toUpperCase())), /*#__PURE__*/React.createElement("button", {
     onClick: onLogout,
     style: {
       background: "none",
@@ -2526,7 +2527,9 @@ const styles = {
     background: COLORS.espresso,
     display: "flex",
     alignItems: "center",
-    gap: 12
+    gap: 12,
+    flexShrink: 0,
+    minHeight: 64
   },
   backBtn: {
     background: "rgba(255,255,255,0.1)",
@@ -2564,12 +2567,14 @@ const styles = {
   },
   screen: {
     flex: 1,
+    minHeight: 0,
     overflowY: "auto",
     padding: "26px 22px 32px"
   },
   homeHeader: {
     padding: "26px 22px 16px",
-    background: COLORS.espresso
+    background: COLORS.espresso,
+    flexShrink: 0
   },
   overallRow: {
     display: "flex",
