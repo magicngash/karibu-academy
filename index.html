@@ -1929,10 +1929,12 @@ function ManagerDashboard({
     style: styles.feedbackText
   }, error)), rows && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(125px, 1fr))", gap: 10, marginBottom: 18 }
-  }, [{ label: "Staff", value: totalStaff }, { label: "Completion", value: `${completionRate}%` }, { label: "Modules done", value: completedModules }, { label: "In progress", value: activeStaff }].map(card => /*#__PURE__*/React.createElement("div", {
+  }, [{ label: "Staff", value: totalStaff }, { label: "Completion", value: `${completionRate}%` }, { label: "Modules done", value: completedModules }, { label: "In progress (saved starts)", value: activeStaff }].map(card => /*#__PURE__*/React.createElement("div", {
     key: card.label,
     style: { ...styles.scoreBox, alignItems: "flex-start", padding: "12px 14px" }
   }, /*#__PURE__*/React.createElement("span", { style: styles.scoreNum }, card.value), /*#__PURE__*/React.createElement("span", { style: styles.scoreLabel }, card.label)))), /*#__PURE__*/React.createElement("div", {
+    style: { ...styles.syllabusBox, marginBottom: 16, padding: "10px 14px" }
+  }, /*#__PURE__*/React.createElement("span", { style: styles.moduleCardBlurb }, "In progress counts modules that have been saved as started. A learner appears here after the app records a module start; unfinished work kept only in the learner's browser is not included yet.")), /*#__PURE__*/React.createElement("div", {
     style: { ...styles.syllabusBox, marginBottom: 16 }
   }, /*#__PURE__*/React.createElement("span", { style: styles.objLabel }, "Module analytics"), moduleStats.map(m => /*#__PURE__*/React.createElement("div", {
     key: m.id,
