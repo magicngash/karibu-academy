@@ -966,7 +966,7 @@ function ModuleFlow({
       width: `${progressPct}%`
     }
   })))), isManager && /*#__PURE__*/React.createElement("button", {
-    style: styles.courseDashboardBtn,
+    style: session?.role === "manager" ? styles.courseDashboardBtn : { display: "none" },
     onClick: onManagerDashboard,
     type: "button"
   }, "Manager dashboard"), /*#__PURE__*/React.createElement("div", {
@@ -2121,6 +2121,7 @@ function Home({
   completedIds,
   session,
   onBackToLanding,
+  onManagerDashboard,
   onLogout
 }) {
   const doneCount = completedIds.length;
@@ -2152,6 +2153,10 @@ function Home({
   }), /*#__PURE__*/React.createElement("span", {
     style: styles.eyebrowDark
   }, "Back · ", (branding.app_name || "KARIBU ACADEMY").toUpperCase())), /*#__PURE__*/React.createElement("button", {
+    onClick: onManagerDashboard,
+    style: session?.role === "manager" ? styles.courseDashboardBtn : { display: "none" },
+    type: "button"
+  }, "Manager dashboard"), /*#__PURE__*/React.createElement("button", {
     onClick: onLogout,
     style: {
       background: "none",
@@ -2410,6 +2415,7 @@ function App() {
     completedIds: completedIds,
     session: session,
     onBackToLanding: () => setScreen("signed-in"),
+    onManagerDashboard: () => setScreen("manager-dashboard"),
     onLogout: handleLogout
   }), screen === "module" && activeMod && MODULE_DATA[activeMod.id] && /*#__PURE__*/React.createElement(ModuleFlow, {
     moduleData: MODULE_DATA[activeMod.id],
@@ -2562,11 +2568,11 @@ const styles = {
     letterSpacing: "0.14em"
   },
   courseDashboardBtn: {
-    background: "rgba(255,255,255,0.1)",
-    border: "1px solid rgba(255,255,255,0.28)",
-    color: COLORS.ivory,
+    background: COLORS.marigold,
+    border: "1px solid " + COLORS.marigold,
+    color: COLORS.espresso,
     borderRadius: 999,
-    padding: "7px 10px",
+    padding: "8px 11px",
     fontSize: "0.7rem",
     fontWeight: 700,
     cursor: "pointer",
