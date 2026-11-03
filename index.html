@@ -1931,7 +1931,7 @@ function ManagerDashboard({
   }, [{ label: "Staff", value: totalStaff, description: "Number of people with staff accounts" }, { label: "Completion", value: `${completionRate}%`, description: "Percentage of assigned modules completed" }, { label: "Modules done", value: completedModules, description: "Completed modules across the team" }].map(card => /*#__PURE__*/React.createElement("div", {
     key: card.label,
     style: { ...styles.scoreBox, alignItems: "flex-start", padding: "12px 14px" }
-  }, /*#__PURE__*/React.createElement("span", { style: styles.scoreNum }, card.value), /*#__PURE__*/React.createElement("span", { style: styles.scoreLabel }, card.label), /*#__PURE__*/React.createElement("span", { style: { fontSize: "0.68rem", color: COLORS.tan, lineHeight: 1.2, marginTop: 4 } }, card.description)))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", { style: styles.scoreNum }, card.value), /*#__PURE__*/React.createElement("span", { style: styles.scoreLabel }, card.label), /*#__PURE__*/React.createElement("span", { style: { fontSize: "0.68rem", color: COLORS.stone, lineHeight: 1.2, marginTop: 4 } }, card.description)))), /*#__PURE__*/React.createElement("div", {
     style: { ...styles.syllabusBox, marginBottom: 16 }
   }, /*#__PURE__*/React.createElement("span", { style: styles.objLabel }, "Module analytics"), /*#__PURE__*/React.createElement("span", { style: { ...styles.moduleCardBlurb, display: "block", marginTop: 4 } }, "Completion rate for each training module across the team."), moduleStats.map(m => /*#__PURE__*/React.createElement("div", {
     key: m.id,
