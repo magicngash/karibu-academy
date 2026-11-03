@@ -882,7 +882,9 @@ function ModuleFlow({
   moduleData,
   onExit,
   onFinish,
-  resumeKey
+  resumeKey,
+  isManager,
+  onManagerDashboard
 }) {
   const savedProgress = React.useMemo(() => {
     try {
@@ -963,7 +965,11 @@ function ModuleFlow({
       ...styles.progressFill,
       width: `${progressPct}%`
     }
-  })))), /*#__PURE__*/React.createElement("div", {
+  })))), isManager && /*#__PURE__*/React.createElement("button", {
+    style: styles.courseDashboardBtn,
+    onClick: onManagerDashboard,
+    type: "button"
+  }, "Manager dashboard"), /*#__PURE__*/React.createElement("div", {
     className: "screen",
     ref: screenRef,
     style: styles.screen
@@ -2409,7 +2415,9 @@ function App() {
     moduleData: MODULE_DATA[activeMod.id],
     onExit: exitToHome,
     resumeKey: `karibu-training:${RESTAURANT_ID}:${session?.staffId}:module:${activeMod.id}`,
-    onFinish: score => finishModule(activeMod.id, score, MODULE_DATA[activeMod.id].quiz.length)
+    onFinish: score => finishModule(activeMod.id, score, MODULE_DATA[activeMod.id].quiz.length),
+    isManager: session?.role === "manager",
+    onManagerDashboard: () => setScreen("manager-dashboard")
   }), screen === "coming-soon" && activeMod && /*#__PURE__*/React.createElement(ComingSoon, {
     mod: activeMod,
     onExit: exitToHome
@@ -2552,6 +2560,18 @@ const styles = {
     fontWeight: 700,
     fontSize: "0.7rem",
     letterSpacing: "0.14em"
+  },
+  courseDashboardBtn: {
+    background: "rgba(255,255,255,0.1)",
+    border: "1px solid rgba(255,255,255,0.28)",
+    color: COLORS.ivory,
+    borderRadius: 999,
+    padding: "7px 10px",
+    fontSize: "0.7rem",
+    fontWeight: 700,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    flexShrink: 0
   },
   progressTrack: {
     marginTop: 8,
